@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.loyin.model.crm.Contacts;
-import net.loyin.model.crm.Customer;
+import net.loyin.jfinal.anatation.TableBind;
 import net.loyin.model.sso.Person;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.jfinal.aop.Before;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.tx.Tx;
 
 /**
  * @author luxiangning
@@ -22,6 +24,7 @@ import com.jfinal.plugin.activerecord.Page;
  * 种植表
  *
  */
+@TableBind(name = "plan_plant")
 public class Plant extends Model<Plant> {
 
 	/**
@@ -45,26 +48,20 @@ public class Plant extends Model<Plant> {
 		sql.append(tableName);
 		sql.append(" t left join ");
 		sql.append(Person.tableName);
-		sql.append(" cust on cust.id=t.customer_id ");
-		sql.append(" left join ");
-		sql.append(" c on c.id=t.creater_id left join ");
-		sql.append(" u on u.id=t.updater_id left join ");
-		sql.append(" h on h.id=cust.head_id ");
-		sql.append(" where 1=1 ");
+		sql.append(" p on p.id=t.head_id");
+		
 		String keyword=(String)filter.get("keyword");
 		if(StringUtils.isNotEmpty(keyword)){
-			sql.append(" and (t.name like ? or cust.sn like ? or cust.name like ? or t.mobile like ? or t.telephone like ?)");
+			sql.append(" and (t.name like ? or t.variety like ? or p.realname like ?)");
 			keyword="%"+keyword+"%";
 			parame.add(keyword);
 			parame.add(keyword);
 			parame.add(keyword);
-			parame.add(keyword);
-			parame.add(keyword);
 		}
-		String customer_id=(String)filter.get("customer_id");
-		if(StringUtils.isNotEmpty(customer_id)){
-			sql.append(" and t.customer_id=? ");
-			parame.add(customer_id);
+		String company_id=(String)filter.get("company_id");
+		if(StringUtils.isNotEmpty(company_id)){
+			sql.append(" and t.company_id=? ");
+			parame.add(company_id);
 		}
 		String sortField=(String)filter.get("_sortField");
 		if(StringUtils.isNotEmpty(sortField)){
@@ -74,7 +71,43 @@ public class Plant extends Model<Plant> {
 			sql.append(" ");
 			sql.append(sort);
 		}
-		return this.paginate(pageNo, pageSize, "select t.*,cust.type as custType,cust.name as customer_name,c.realname creater_name,u.realname updater_name,h.realname head_name ",sql.toString(),parame.toArray());
+		return this.paginate(pageNo, pageSize, "select t.*,p.realname as username,p.mobile as mobile ",sql.toString(),parame.toArray());
+	}
+	
+	/**
+	 * 删除
+	 * @param id			记录ID
+	 * @param company_id	公司ID
+	 */
+	@Before(Tx.class)
+	public void del(String id,String company_id){
+		if (StringUtils.isNotEmpty(id)) {
+			String[] ids=id.split(",");
+			StringBuffer ids_=new StringBuffer();
+			List<String> parame=new ArrayList<String>();
+			for(String id_:ids){
+				ids_.append("?,");
+				parame.add(id_);
+			}
+			ids_.append("'-'");
+			parame.add(company_id);
+			Db.update("delete  from " + tableName + " where id in ("+ids_.toString()+ ") and company_id=? ",parame.toArray());
+		}
+	}
+	/**
+	 * 通过ID得到一条记录
+	 * @param id			记录ID
+	 * @param company_id	公司ID
+	 * @return				一条记录
+	 */
+	public Plant findById(String id,String company_id){
+		StringBuffer sql=new StringBuffer("select t.*,p.realname as username,p.mobile as mobile from ");
+		sql.append(tableName);
+		sql.append(" t left join ");
+		sql.append(Person.tableName);
+		sql.append(" p on t.head_id=p.id ");
+		sql.append(" where t.id=? and t.company_id=? ");
+		return dao.findFirst(sql.toString(),id,company_id);
 	}
 
 }
