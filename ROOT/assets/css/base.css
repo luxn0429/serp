@@ -142,7 +142,11 @@ color: #d2160b; border-radius: 14px; font-weight: normal; }
 .user-menu a:hover .icon-support { background-position: -320px -112px; }
 .user-menu a:hover .icon-help { background-position: -352px -112px; }
 .user-menu a:hover .icon-quit { background-position: -368px -112px; }
-#main-hd .company { margin-right: 10px; font: bold 24px/1.5 'Microsoft Yahei'; text-shadow: 0 0 1px rgba(0,0,0,0.2);position: absolute;/*max-width:360px;*/ float:left; overflow:hidden; }
+#main-hd .company { margin-right: 10px; font: bold 24px/1.5 'Microsoft Yahei'; text-shadow: 0 0 1px rgba(0,0,0,0.2);position: absolute;width:360px; float:left; overflow:hidden; }
+
+#main-hd .function-menu {float: left;  margin:3px 0 0 0; position: absolute;right:10px;}
+#main-hd .function-menu li { float: left; display: inline; position: relative; font-family:'\5b8b\4f53'; font-weight:normal; }
+
 #main-hd .period{ float:left; margin:15px 0 0 0; }
 #main-bd { overflow: hidden; zoom: 1; }
 #main-hd .user-menu .telphone{ font-family:Arial, Helvetica, sans-serif; }

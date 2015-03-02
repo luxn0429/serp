@@ -203,12 +203,12 @@ var model=avalon.define({
 					var t = $(this).data("right");
 					if (t && !Business.verifyRight(t))
 						return false;
-					var i = $(this).attr("tabid"), a = rootPath+$(this).attr("href"), r = $(
-							this).attr("showClose"), n = $(this).attr("tabTxt")
-							|| $(this).text().replace(">", ""), o = $(this).attr(
-							"parentOpen");
-					o ? parent.tab.addTabItem({tabid:i,text:n,url:a,showClose:r}):
-						tab.addTabItem({tabid:i,text:n,url:a,showClose:r});
+					var i = $(this).attr("tabid");
+					var a = rootPath+$(this).attr("href");
+					var r = $(this).attr("showClose");
+					var n = $(this).attr("tabTxt")|| $(this).text().replace(">", "");
+					var o = $(this).attr("parentOpen");
+					o ? parent.tab.addTabItem({tabid:i,text:n,url:a,showClose:r}):tab.addTabItem({tabid:i,text:n,url:a,showClose:r});
 					return false
 				});
 	}

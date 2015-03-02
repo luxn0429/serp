@@ -181,6 +181,9 @@ var THISPAGE = {
 			},
 			ondblClickRow:function(t) {
 				$("#" + t).find(".fa-eye").trigger("click")
+			},
+			gridComplete:function(){
+				
 			}
 		})
 	},
